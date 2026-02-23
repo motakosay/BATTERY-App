@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    package="com.example.batteryapp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- IMPORTANT: fixes "app not compatible" -->
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="29" />
+
+    <!-- Foreground service required on Android 15 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Required for Android 13+ notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <application
+        android:label="Battery Alarm"
+        android:icon="@android:drawable/ic_lock_idle_alarm">
+
+        <!-- Launcher activity MUST be exported -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Foreground battery monitor -->
+        <service
+            android:name=".di.BatteryService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- Alarm ringtone service -->
+        <service
+            android:name=".di.AlarmBatteryService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <!-- Stops ringtone -->
+        <service
+            android:name=".di.StopAlarmService"
+            android:exported="false" />
+
+        <!-- Keeps power receiver alive -->
+        <service
+            android:name=".di.PowerConnectionService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"/>
+
+        <!-- Battery receiver is registered dynamically -->
+        <receiver
+            android:name=".di.BatteryReceiver"
+            android:exported="false" />
+
+        <!-- System broadcast receiver MUST be exported -->
+        <receiver
+            android:name=".di.PowerConnectionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>
